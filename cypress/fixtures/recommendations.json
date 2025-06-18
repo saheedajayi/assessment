@@ -1,0 +1,35 @@
+[
+  {
+    "recommendationId": "rec-001",
+    "title": "AWS ECS Task Definition Security",
+    "description": "Implement security best practices for ECS task definitions including proper IAM roles, network configuration, and resource limits.",
+    "score": 85,
+    "provider": [1],
+    "frameworks": [
+      { "name": "CIS AWS", "section": "1", "subsection": "1.1" },
+      { "name": "NIST 800-53", "section": "AC", "subsection": "AC-1" }
+    ],
+    "reasons": [
+      "Minimizes container attack surface",
+      "Ensures compliance with security standards",
+      "Reduces privilege escalation risks"
+    ],
+    "furtherReading": [
+      {
+        "name": "AWS ECS Security Best Practices",
+        "href": "https://docs.aws.amazon.com/AmazonECS/latest/bestpracticesguide/security.html"
+      }
+    ],
+    "totalHistoricalViolations": 150,
+    "affectedResources": [{ "name": "production-web-task" }, { "name": "staging-api-task" }],
+    "impactAssessment": {
+      "totalViolations": 50,
+      "mostImpactedScope": {
+        "name": "production-cluster",
+        "type": "ECS Cluster",
+        "count": 25
+      }
+    },
+    "class": 1
+  }
+]
