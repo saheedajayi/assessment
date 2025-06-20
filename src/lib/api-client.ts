@@ -31,7 +31,6 @@ class ApiClient {
         this.client.interceptors.response.use(
             (response) => response,
             (error: AxiosError) => {
-                // Handle common errors
                 if (error.response?.status === 401) {
                     // Handle unauthorized - could trigger logout
                     window.dispatchEvent(new CustomEvent("auth:unauthorized"))
@@ -68,3 +67,5 @@ class ApiClient {
 }
 
 export const apiClient = new ApiClient()
+
+

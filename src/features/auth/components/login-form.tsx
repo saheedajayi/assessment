@@ -1,17 +1,18 @@
 "use client"
 
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { z } from "zod"
-import { Button } from "../../../components/ui/button"
-import { Label } from "../../../components/ui/label"
-import { Loader2 } from "lucide-react"
-import { useAuth } from "../../../providers/auth-provider"
-import { authService } from "../../../services/auth"
-import { toast } from "react-hot-toast"
-import { handleApiError } from "../../../lib/error-handling"
-import { Input } from "../../../components/ui/input"
-import type { LoginRequest } from "../../../types/auth"
+import {useForm} from "react-hook-form"
+import {zodResolver} from "@hookform/resolvers/zod"
+import {z} from "zod"
+import {Button} from "../../../components/ui/button"
+import {Label} from "../../../components/ui/label"
+import {Loader2} from "lucide-react"
+import {useAuth} from "../../../providers/auth-provider"
+import {authService} from "../../../services/auth"
+import {toast} from "react-hot-toast"
+import {handleApiError} from "../../../lib/error-handling"
+import {Input} from "../../../components/ui/input"
+import type {LoginRequest} from "../../../types/auth"
+import { sanitizeText } from "../../../lib/sanitize"
 
 const loginSchema = z
     .object({
@@ -23,12 +24,12 @@ const loginSchema = z
 type LoginFormData = z.infer<typeof loginSchema>
 
 export function LoginForm() {
-    const { login } = useAuth()
+    const {login} = useAuth()
 
     const {
         register,
         handleSubmit,
-        formState: { errors, isSubmitting },
+        formState: {errors, isSubmitting},
         setError,
     } = useForm<LoginFormData>({
         resolver: zodResolver(loginSchema),
@@ -36,9 +37,9 @@ export function LoginForm() {
 
     const onSubmit = async (data: LoginFormData) => {
         try {
-            // Type assertion to ensure compatibility with LoginRequest
+
             const loginData: LoginRequest = {
-                username: data.username,
+                username: sanitizeText(data.username),
                 password: data.password,
             }
             const response = await authService.login(loginData)
@@ -48,8 +49,8 @@ export function LoginForm() {
             const errorMessage = handleApiError(error)
 
             if (error?.response?.status === 401) {
-                setError("username", { message: "Invalid credentials" })
-                setError("password", { message: "Invalid credentials" })
+                setError("username", {message: "Invalid credentials"})
+                setError("password", {message: "Invalid credentials"})
             } else {
                 toast.error(errorMessage)
             }
@@ -85,9 +86,10 @@ export function LoginForm() {
             </div>
 
             <Button type="submit" className="w-full" disabled={isSubmitting} data-testid="login-button">
-                {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin"/>}
                 Sign In
             </Button>
         </form>
     )
 }
+

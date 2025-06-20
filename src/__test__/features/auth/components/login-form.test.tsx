@@ -6,6 +6,8 @@ import { BrowserRouter } from "react-router-dom"
 import { LoginForm } from "../../../../features/auth/components/login-form"
 import { AuthProvider } from "../../../../providers/auth-provider"
 import { authService } from "../../../../services/auth"
+import { UserFactory } from "../../../factories/user-factory"
+import { jest } from "@jest/globals"
 
 // Mock the auth service
 jest.mock("../../../../services/auth")
@@ -17,6 +19,11 @@ jest.mock("react-hot-toast", () => ({
         success: jest.fn(),
         error: jest.fn(),
     },
+}))
+
+// Mock sanitize functions
+jest.mock("../../../../lib/sanitize", () => ({
+    sanitizeText: jest.fn((text: string) => text), // Return text as-is for testing
 }))
 
 const TestWrapper = ({ children }: { children: React.ReactNode }) => {
@@ -73,7 +80,15 @@ describe("LoginForm", () => {
 
     it("submits form with valid credentials", async () => {
         const user = userEvent.setup()
-        mockAuthService.login.mockResolvedValue({ token: "mock-token" })
+        const mockUser = UserFactory.createAdmin()
+        const loginRequest = UserFactory.createValidLoginRequest()
+        const mockToken = "mock-jwt-token"
+
+        // Mock the login response to match what the component expects
+        mockAuthService.login.mockResolvedValue({
+            token: mockToken,
+            user: mockUser,
+        })
 
         render(
             <TestWrapper>
@@ -85,20 +100,22 @@ describe("LoginForm", () => {
         const passwordInput = screen.getByLabelText(/password/i)
         const submitButton = screen.getByRole("button", { name: /sign in/i })
 
-        await user.type(usernameInput, "admin")
-        await user.type(passwordInput, "password")
+        await user.type(usernameInput, loginRequest.username)
+        await user.type(passwordInput, loginRequest.password)
         await user.click(submitButton)
 
         await waitFor(() => {
             expect(mockAuthService.login).toHaveBeenCalledWith({
-                username: "admin",
-                password: "password",
+                username: loginRequest.username, // sanitizeText returns the same value in tests
+                password: loginRequest.password,
             })
         })
     })
 
     it("shows loading state during submission", async () => {
         const user = userEvent.setup()
+        const loginRequest = UserFactory.createValidLoginRequest()
+
         mockAuthService.login.mockImplementation(() => new Promise((resolve) => setTimeout(resolve, 100)))
 
         render(
@@ -111,8 +128,8 @@ describe("LoginForm", () => {
         const passwordInput = screen.getByLabelText(/password/i)
         const submitButton = screen.getByRole("button", { name: /sign in/i })
 
-        await user.type(usernameInput, "admin")
-        await user.type(passwordInput, "password")
+        await user.type(usernameInput, loginRequest.username)
+        await user.type(passwordInput, loginRequest.password)
         await user.click(submitButton)
 
         expect(submitButton).toBeDisabled()
@@ -121,6 +138,8 @@ describe("LoginForm", () => {
 
     it("handles login error", async () => {
         const user = userEvent.setup()
+        const invalidLogin = UserFactory.createInvalidLoginRequest()
+
         mockAuthService.login.mockRejectedValue({
             response: { status: 401 },
         })
@@ -135,12 +154,77 @@ describe("LoginForm", () => {
         const passwordInput = screen.getByLabelText(/password/i)
         const submitButton = screen.getByRole("button", { name: /sign in/i })
 
-        await user.type(usernameInput, "wrong")
-        await user.type(passwordInput, "wrong")
+        await user.type(usernameInput, invalidLogin.username)
+        await user.type(passwordInput, invalidLogin.password)
         await user.click(submitButton)
 
         await waitFor(() => {
             expect(screen.getAllByText("Invalid credentials")).toHaveLength(2)
+        })
+    })
+
+    it("calls sanitizeText on username input", async () => {
+        const user = userEvent.setup()
+        const mockUser = UserFactory.createAdmin()
+        const loginRequest = UserFactory.createValidLoginRequest()
+        const mockToken = "mock-jwt-token"
+
+        const { sanitizeText } = require("../../../../lib/sanitize")
+
+        mockAuthService.login.mockResolvedValue({
+            token: mockToken,
+            user: mockUser,
+        })
+
+        render(
+            <TestWrapper>
+                <LoginForm />
+            </TestWrapper>,
+        )
+
+        const usernameInput = screen.getByLabelText(/username/i)
+        const passwordInput = screen.getByLabelText(/password/i)
+        const submitButton = screen.getByRole("button", { name: /sign in/i })
+
+        await user.type(usernameInput, loginRequest.username)
+        await user.type(passwordInput, loginRequest.password)
+        await user.click(submitButton)
+
+        await waitFor(() => {
+            expect(sanitizeText).toHaveBeenCalledWith(loginRequest.username)
+        })
+    })
+
+    it("does not sanitize password input", async () => {
+        const user = userEvent.setup()
+        const mockUser = UserFactory.createAdmin()
+        const loginRequest = UserFactory.createValidLoginRequest()
+        const mockToken = "mock-jwt-token"
+
+        mockAuthService.login.mockResolvedValue({
+            token: mockToken,
+            user: mockUser,
+        })
+
+        render(
+            <TestWrapper>
+                <LoginForm />
+            </TestWrapper>,
+        )
+
+        const usernameInput = screen.getByLabelText(/username/i)
+        const passwordInput = screen.getByLabelText(/password/i)
+        const submitButton = screen.getByRole("button", { name: /sign in/i })
+
+        await user.type(usernameInput, loginRequest.username)
+        await user.type(passwordInput, loginRequest.password)
+        await user.click(submitButton)
+
+        await waitFor(() => {
+            expect(mockAuthService.login).toHaveBeenCalledWith({
+                username: loginRequest.username,
+                password: loginRequest.password, // Password should not be sanitized
+            })
         })
     })
 })

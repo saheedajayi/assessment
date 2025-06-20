@@ -10,11 +10,9 @@ class AuthService {
     async logout(): Promise<void> {
         // await apiClient.post('/logout')
     }
-
-    async refreshToken(): Promise<LoginResponse> {
-        const response = await apiClient.post<LoginResponse>("/refresh")
-        return response.data
-    }
 }
 
 export const authService = new AuthService()
+
+
+

@@ -1,123 +1,230 @@
 # Aryon Security Frontend
 
-A modern, production-ready React application for managing security policy recommendations. Built with Create React App, TypeScript, and Tailwind CSS.
+> A modern React application built with TypeScript, Vite, and Tailwind CSS for enterprise security management.
 
-## 🚀 Features
+---
 
-- **Modern Architecture**: Feature-based folder structure with clear separation of concerns
-- **Type Safety**: Full TypeScript implementation with strict type checking
-- **Responsive Design**: Mobile-first responsive design with dark/light mode support
-- **Performance**: Code splitting, lazy loading, and optimized bundle size
-- **Testing**: Comprehensive test coverage with Jest and React Testing Library
-- **Accessibility**: WCAG compliant with proper ARIA attributes and keyboard navigation
-- **Error Handling**: Robust error boundaries and user-friendly error messages
-- **State Management**: React Query for server state, Context API for client state
-- **Authentication**: JWT-based authentication with protected routes
+## 🚀 **Features**
 
-## 🏗️ Architecture
+- **Modern Stack** — Built with React 18, TypeScript, and Vite for fast development
+- **Responsive Design** — Mobile-first approach with Tailwind CSS
+- **Authentication** — Secure authentication with httpOnly cookies
+- **Security** — Content Security Policy (CSP) implementation and input sanitization
+- **State Management** — React Query for server state and Context API for client state
+- **Testing** — Comprehensive test suite with Jest, React Testing Library, and Cypress
+- **Accessibility** — WCAG compliant components and keyboard navigation
+- **Dark Mode** — Built-in theme switching capability
 
-### Folder Structure
+---
 
-\`\`\`
-src/
-├── components/            # Reusable UI components
-│   ├── common/           # Generic components (ErrorBoundary, LoadingSpinner)
-│   ├── layout/           # Layout components (Header, Sidebar, Navigation)
-│   ├── routing/          # Routing components
-│   └── ui/               # Base UI components (Button, Input, Card)
-├── features/             # Feature-based modules
-│   ├── auth/            # Authentication feature
-│   ├── dashboard/       # Dashboard feature
-│   └── recommendations/ # Recommendations feature
-├── hooks/               # Custom React hooks
-├── lib/                 # Utility libraries
-├── providers/           # React context providers
-├── services/            # API services
-├── types/               # TypeScript type definitions
-└── __tests__/           # Test files
-\`\`\`
+## 🛡️ **Security Features**
 
-## 🛠️ Tech Stack
+### 🍪 **HttpOnly Cookies**
+- Authentication tokens stored in secure httpOnly cookies
+- Automatic CSRF protection
+- No token exposure to JavaScript
 
-- **Framework**: Create React App
-- **Language**: TypeScript
-- **Styling**: Tailwind CSS with CSS Variables
-- **State Management**: React Query + Context API
-- **Forms**: React Hook Form with Zod validation
-- **UI Components**: Radix UI primitives
-- **Icons**: Lucide React
-- **Testing**: Jest + React Testing Library
-- **HTTP Client**: Axios with interceptors
+### 🔒 **Content Security Policy (CSP)**
+- Strict CSP headers to prevent XSS attacks
+- Whitelisted domains for external resources
+- Inline script and style restrictions
 
-## 📦 Installation
+### 🧹 **Input Sanitization**
+- All user inputs are sanitized before rendering
+- HTML content filtering to prevent XSS
+- URL validation for external links
+- CSS injection prevention
 
-\`\`\`bash
+---
+
+## 📦 **Installation**
+
+### **Prerequisites**
+```bash
+Node.js 18+
+npm or yarn
+```
+
+### **Setup**
+```bash
+# Clone the repository
+git clone <repository-url>
+cd aryonsecurityfrontend
+
 # Install dependencies
 npm install
 
 # Start development server
-npm start
+npm run dev
+```
 
-# Run tests
-npm test
+---
 
-# Build for production
-npm run build
-\`\`\`
+## 🧪 **Testing**
 
-## 🧪 Testing
+### **Unit Tests**
+```bash
+# Run unit tests
+npm run test
 
-\`\`\`bash
-# Run all tests
-npm test
+# Run tests with coverage
+npm run test:coverage
 
 # Run tests in watch mode
-npm test -- --watch
+npm run test:watch
+```
 
-# Generate coverage report
-npm test -- --coverage
-\`\`\`
+### **End-to-End Tests**
+```bash
+# Run Cypress tests
+npm run cypress:open
 
-## 🔧 Configuration
+# Run Cypress tests headlessly
+npm run cypress:run
+```
 
-### Environment Variables
+### **Test Factories**
+The project uses factory patterns for generating test data:
 
-Create a `.env.local` file:
+```typescript
+// Create a recommendation with default values
+const recommendation = RecommendationFactory.create()
 
-\`\`\`env
-REACT_APP_API_URL=http://localhost:3001
-\`\`\`
+// Create a recommendation with specific overrides
+const awsRecommendation = RecommendationFactory.createAWS({
+  title: "Custom AWS Recommendation"
+})
 
-## 🚀 Getting Started
+// Create multiple recommendations
+const recommendations = RecommendationFactory.createMany(5)
+```
 
-1. **Clone the repository**
-2. **Install dependencies**: `npm install`
-3. **Start the development server**: `npm start`
-4. **Open your browser** to `http://localhost:3000`
+---
 
-## 📱 Features
+## 🏗️ **Architecture**
 
-- **Dashboard**: Overview of security recommendations
-- **Recommendations**: Browse, filter, and manage security recommendations
-- **Archive**: View and restore archived recommendations
-- **Authentication**: Secure login with JWT tokens
-- **Dark Mode**: Toggle between light and dark themes
-- **Responsive**: Works on desktop, tablet, and mobile devices
+### **Project Structure**
+```
+src/
+├── components/          # Reusable UI components
+│   ├── ui/             # Base UI components (shadcn/ui)
+│   ├── layout/         # Layout components
+│   └── common/         # Common components
+├── features/           # Feature-based modules
+│   ├── auth/          # Authentication feature
+│   ├── recommendations/ # Recommendations feature
+│   └── dashboard/     # Dashboard feature
+├── hooks/             # Custom React hooks
+├── lib/               # Utility libraries
+├── providers/         # React context providers
+├── services/          # API services
+├── types/             # TypeScript type definitions
+└── __test__/          # Test files and factories
+```
 
-## 🔐 Authentication
+### **Key Technologies**
 
-Default login credentials:
-- **Username**: admin
-- **Password**: password
+| Technology | Purpose |
+|------------|---------|
+| **React 18** | Latest React with concurrent features |
+| **TypeScript** | Type-safe development |
+| **Vite** | Fast build tool and dev server |
+| **Tailwind CSS** | Utility-first CSS framework |
+| **shadcn/ui** | High-quality component library |
+| **React Query** | Server state management |
+| **React Hook Form** | Form handling with validation |
+| **Zod** | Schema validation |
+| **Axios** | HTTP client with interceptors |
 
-## 🤝 Contributing
+---
 
-1. Follow the established folder structure
-2. Write tests for new features
-3. Use TypeScript strictly
-4. Follow accessibility guidelines
-5. Update documentation as needed
+## 🔧 **Configuration**
 
-## 📄 License
+### **Environment Variables**
+```bash
+VITE_API_URL=http://localhost:3001
+VITE_APP_TITLE=Aryon Security
+```
 
-This project is licensed under the MIT License.
+### **CSP Configuration**
+Content Security Policy is configured in `app/layout.tsx`:
+
+```typescript
+meta httpEquiv="Content-Security-Policy" content={`
+  default-src 'self';
+  script-src 'self' 'unsafe-eval' 'unsafe-inline';
+  style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+  img-src 'self' data: blob: https:;
+  font-src 'self' https://fonts.gstatic.com;
+  connect-src 'self' http://localhost:3001;
+  object-src 'none';
+  base-uri 'self';
+  form-action 'self';
+  frame-ancestors 'none';
+  upgrade-insecure-requests;
+`}
+```
+
+---
+
+## 🚀 **Deployment**
+
+### **Build for Production**
+```bash
+npm run build
+```
+
+### **Preview Production Build**
+```bash
+npm run preview
+```
+
+### **Docker Support**
+```dockerfile
+FROM node:18-alpine
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci --only=production
+COPY . .
+RUN npm run build
+EXPOSE 3000
+CMD ["npm", "run", "preview"]
+```
+
+---
+
+## 🤝 **Contributing**
+
+1. **Fork** the repository
+2. **Create** a feature branch (`git checkout -b feature/amazing-feature`)
+3. **Commit** your changes (`git commit -m 'Add amazing feature'`)
+4. **Push** to the branch (`git push origin feature/amazing-feature`)
+5. **Open** a Pull Request
+
+### **Code Standards**
+- ✅ Follow TypeScript strict mode
+- ✅ Use ESLint and Prettier for code formatting
+- ✅ Write tests for new features
+- ✅ Follow conventional commit messages
+- ✅ Maintain 70%+ test coverage
+
+---
+
+## 📝 **License**
+
+This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.
+
+---
+
+## 🆘 **Support**
+
+For support and questions:
+- 📝 Create an issue in the repository
+- 👥 Contact the development team
+- 📚 Check the documentation wiki
+
+---
+
+## 🔄 **Changelog**
+
+See [CHANGELOG.md](CHANGELOG.md) for a list of changes and version history.

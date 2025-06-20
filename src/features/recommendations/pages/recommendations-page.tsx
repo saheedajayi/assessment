@@ -1,31 +1,34 @@
-import {useState, useMemo} from "react"
-import {Link} from "react-router-dom"
-import {Container} from "../../../components/common/container"
-import {Button} from "../../../components/ui/button"
-import {Archive, Package} from "lucide-react"
-import {RecommendationsList} from "../components/recommendations-list"
-import {RecommendationsFilters} from "../components/recommendations-filters"
-import {useRecommendations} from "../hooks/use-recommendations"
-import {useFilter} from "../../../providers/filter-provider"
-import type {Recommendation} from "../../../types/recommendations"
-import {RecommendationSheet} from "../components/recommendation-sheet.tsx";
+"use client"
+
+import { useState, useMemo } from "react"
+import { Link } from "react-router-dom"
+import { Container } from "../../../components/common/container"
+import { Button } from "../../../components/ui/button"
+import { Archive, Package } from "lucide-react"
+import { RecommendationsList } from "../components/recommendations-list"
+import { RecommendationsFilters } from "../components/recommendations-filters"
+import { useRecommendations } from "../hooks/use-recommendations"
+import { useFilter } from "../../../providers/filter-provider"
+import type { Recommendation } from "../../../types/recommendations"
+import { RecommendationSheet } from "../components/recommendation-sheet.tsx"
 
 interface RecommendationsPageProps {
     archived?: boolean
 }
 
-export default function RecommendationsPage({archived = false}: RecommendationsPageProps) {
+export default function RecommendationsPage({ archived = false }: RecommendationsPageProps) {
     const [selectedRecommendation, setSelectedRecommendation] = useState<Recommendation | null>(null)
     const [searchTerm, setSearchTerm] = useState("")
 
-    // Use the filter context safely
-    const {selectedTags} = useFilter()
 
-    const {data, fetchNextPage, hasNextPage, isLoading, error, removeRecommendation} = useRecommendations({
-        archived,
-        search: searchTerm,
-        tags: selectedTags,
-    })
+    const { selectedTags } = useFilter()
+
+    const { data, fetchNextPage, hasNextPage, isLoading, error, removeRecommendation, invalidateRecommendations } =
+        useRecommendations({
+            archived,
+            search: searchTerm,
+            tags: selectedTags,
+        })
 
     const recommendations = useMemo(() => {
         return data?.pages.flatMap((page) => page.data) ?? []
@@ -42,8 +45,14 @@ export default function RecommendationsPage({archived = false}: RecommendationsP
     }
 
     const handleArchiveToggle = (recommendationId: string) => {
+
         removeRecommendation(recommendationId)
         setSelectedRecommendation(null)
+
+
+        setTimeout(() => {
+            invalidateRecommendations()
+        }, 100)
     }
 
     return (
@@ -55,9 +64,8 @@ export default function RecommendationsPage({archived = false}: RecommendationsP
                         <h1 className="text-2xl font-bold">{archived ? "Archived " : ""}Recommendations</h1>
                     </div>
                     <Button asChild variant="outline">
-                        <Link to={archived ? "/recommendations" : "/recommendations/archive"}
-                              data-testid="archive-link">
-                            {archived ? <Package className="mr-2 h-4 w-4"/> : <Archive className="mr-2 h-4 w-4"/>}
+                        <Link to={archived ? "/recommendations" : "/recommendations/archive"} data-testid="archive-link">
+                            {archived ? <Package className="mr-2 h-4 w-4" /> : <Archive className="mr-2 h-4 w-4" />}
                             {archived ? "Active" : "Archive"}
                         </Link>
                     </Button>
@@ -66,19 +74,18 @@ export default function RecommendationsPage({archived = false}: RecommendationsP
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
                     {/* Filters */}
                     <div className="flex-1 sm:max-w-md">
-                        <RecommendationsFilters searchTerm={searchTerm} onSearchChange={setSearchTerm}/>
+                        <RecommendationsFilters searchTerm={searchTerm} onSearchChange={setSearchTerm} />
                     </div>
 
-                    {/* Results Summary */}
+
                     <div className="flex items-center text-sm text-muted-foreground whitespace-nowrap sm:ml-4">
-                        <span>
-                            Showing {recommendations.length} of {totalCount} results
-                        </span>
+            <span>
+              Showing {recommendations.length} of {totalCount} results
+            </span>
                     </div>
                 </div>
 
 
-                {/* Recommendations List */}
                 <RecommendationsList
                     recommendations={recommendations}
                     isLoading={isLoading}
@@ -89,7 +96,7 @@ export default function RecommendationsPage({archived = false}: RecommendationsP
                     archived={archived}
                 />
 
-                {/* Sheet */}
+
                 <RecommendationSheet
                     recommendation={selectedRecommendation}
                     isOpen={!!selectedRecommendation}
