@@ -223,7 +223,7 @@ describe("LoginForm", () => {
         await waitFor(() => {
             expect(mockAuthService.login).toHaveBeenCalledWith({
                 username: loginRequest.username,
-                password: loginRequest.password, // Password should not be sanitized
+                password: loginRequest.password,
             })
         })
     })

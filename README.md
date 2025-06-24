@@ -17,6 +17,16 @@
 
 ---
 
+## 🎬 **Demo**
+
+See Aryon Security in action with our comprehensive walkthrough:
+
+[![Aryon Security Walkthrough](https://img.shields.io/badge/▶️-Watch%20Demo-blue?style=for-the-badge&logo=loom)](https://www.loom.com/share/57d2946ad559433e8a3e3dd8e8b74e53?sid=73655942-549f-4550-a909-3af70bef5213)
+
+*4-minute overview of key features, navigation, and security capabilities*
+
+---
+
 ## 🛡️ **Security Features**
 
 ### 🍪 **HttpOnly Cookies**
@@ -92,7 +102,7 @@ const recommendation = RecommendationFactory.create()
 
 // Create a recommendation with specific overrides
 const awsRecommendation = RecommendationFactory.createAWS({
-  title: "Custom AWS Recommendation"
+    title: "Custom AWS Recommendation"
 })
 
 // Create multiple recommendations
