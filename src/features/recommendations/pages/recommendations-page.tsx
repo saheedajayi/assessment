@@ -1,6 +1,4 @@
-"use client"
-
-import { useState, useMemo } from "react"
+import { useState } from "react"
 import { Link } from "react-router-dom"
 import { Container } from "../../../components/common/container"
 import { Button } from "../../../components/ui/button"
@@ -20,7 +18,6 @@ export default function RecommendationsPage({ archived = false }: Recommendation
     const [selectedRecommendation, setSelectedRecommendation] = useState<Recommendation | null>(null)
     const [searchTerm, setSearchTerm] = useState("")
 
-
     const { selectedTags } = useFilter()
 
     const { data, fetchNextPage, hasNextPage, isLoading, error, removeRecommendation, invalidateRecommendations } =
@@ -30,11 +27,9 @@ export default function RecommendationsPage({ archived = false }: Recommendation
             tags: selectedTags,
         })
 
-    const recommendations = useMemo(() => {
-        return data?.pages.flatMap((page) => page.data) ?? []
-    }, [data])
-
-    const totalCount = data?.pages[0]?.pagination.totalItems ?? 0
+    // Use deduplicated recommendations from the hook
+    const recommendations = data?.deduplicatedRecommendations ?? []
+    const totalCount = data?.totalCount ?? 0
 
     const handleRecommendationClick = (recommendation: Recommendation) => {
         setSelectedRecommendation(recommendation)
@@ -45,10 +40,8 @@ export default function RecommendationsPage({ archived = false }: Recommendation
     }
 
     const handleArchiveToggle = (recommendationId: string) => {
-
         removeRecommendation(recommendationId)
         setSelectedRecommendation(null)
-
 
         setTimeout(() => {
             invalidateRecommendations()
@@ -77,14 +70,12 @@ export default function RecommendationsPage({ archived = false }: Recommendation
                         <RecommendationsFilters searchTerm={searchTerm} onSearchChange={setSearchTerm} />
                     </div>
 
-
                     <div className="flex items-center text-sm text-muted-foreground whitespace-nowrap sm:ml-4">
             <span>
               Showing {recommendations.length} of {totalCount} results
             </span>
                     </div>
                 </div>
-
 
                 <RecommendationsList
                     recommendations={recommendations}
@@ -95,7 +86,6 @@ export default function RecommendationsPage({ archived = false }: Recommendation
                     onRecommendationClick={handleRecommendationClick}
                     archived={archived}
                 />
-
 
                 <RecommendationSheet
                     recommendation={selectedRecommendation}

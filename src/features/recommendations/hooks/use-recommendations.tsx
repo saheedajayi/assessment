@@ -1,11 +1,18 @@
+
 import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query"
 import { recommendationService } from "../../../services/recommendations"
-import type { RecommendationsFilter } from "../../../types/recommendations"
+import type { RecommendationsFilter, Recommendation, RecommendationsDataResponse } from "../../../types/recommendations"
+import type { InfiniteData } from "@tanstack/react-query"
 
 interface UseRecommendationsOptions {
     archived?: boolean
     search?: string
     tags?: string[]
+}
+
+interface TransformedInfiniteData extends InfiniteData<RecommendationsDataResponse, unknown> {
+    deduplicatedRecommendations: Recommendation[]
+    totalCount: number
 }
 
 export function useRecommendations({ archived = false, search = "", tags = [] }: UseRecommendationsOptions = {}) {
@@ -29,6 +36,26 @@ export function useRecommendations({ archived = false, search = "", tags = [] }:
         initialPageParam: undefined as string | undefined,
         staleTime: 5 * 60 * 1000,
         refetchOnWindowFocus: false,
+        select: (data): TransformedInfiniteData => {
+            // Deduplicate recommendations across pages
+            const allRecommendations: Recommendation[] = []
+            const seenIds = new Set<string>()
+
+            data.pages.forEach((page) => {
+                page.data.forEach((recommendation) => {
+                    if (!seenIds.has(recommendation.recommendationId)) {
+                        seenIds.add(recommendation.recommendationId)
+                        allRecommendations.push(recommendation)
+                    }
+                })
+            })
+
+            return {
+                ...data,
+                deduplicatedRecommendations: allRecommendations,
+                totalCount: data.pages[0]?.pagination.totalItems ?? 0,
+            }
+        },
     })
 
     const removeRecommendation = (recommendationId: string) => {
