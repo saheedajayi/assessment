@@ -53,12 +53,14 @@ export function RecommendationsList({
 
     return (
         <InfiniteScroll
+            key={archived ? "archived" : "active"}
             dataLength={recommendations.length}
             next={onLoadMore}
             hasMore={hasNextPage}
             loader={<LoadingSpinner size="sm" text="Loading more..." />}
             endMessage={<p className="text-center text-sm text-muted-foreground py-4">No more recommendations to load</p>}
             className="space-y-4"
+            height="100vh"
         >
             {recommendations.map((recommendation) => (
                 <RecommendationCard
