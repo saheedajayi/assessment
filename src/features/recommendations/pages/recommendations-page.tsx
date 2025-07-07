@@ -71,9 +71,9 @@ export default function RecommendationsPage({ archived = false }: Recommendation
                     </div>
 
                     <div className="flex items-center text-sm text-muted-foreground whitespace-nowrap sm:ml-4">
-            <span>
-              Showing {recommendations.length} of {totalCount} results
-            </span>
+                        <span>
+                          Showing {recommendations.length} of {totalCount} results
+                        </span>
                     </div>
                 </div>
 

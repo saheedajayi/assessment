@@ -1,5 +1,3 @@
-"use client"
-
 import {useForm} from "react-hook-form"
 import {zodResolver} from "@hookform/resolvers/zod"
 import {z} from "zod"
@@ -37,7 +35,6 @@ export function LoginForm() {
 
     const onSubmit = async (data: LoginFormData) => {
         try {
-
             const loginData: LoginRequest = {
                 username: sanitizeText(data.username),
                 password: data.password,
